@@ -7,8 +7,8 @@ import numpy as np
 
 nd=2
 
-T=10
-nDTout=100
+T=1
+nDTout=10
 
 L=(10.0,1.0)
 g = 9.81
@@ -23,7 +23,7 @@ s = np.sqrt(p**2 - k**2)/2.
 mannings=k
 
 #This is relevant just when use_second_order_NonFlatB_with_EV_stabilization=True
-cE=1000000
+cE=1
 LUMPED_MASS_MATRIX=0
 
 bt = domain.boundaryTags
