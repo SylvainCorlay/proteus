@@ -3,9 +3,9 @@ from proteus.default_n import *
 from sw_hump_2d_p import *
 
 refinement=4
-runCFL=0.75
-#timeIntegration_sw2d = "SSP33"
-timeIntegration_sw2d = "FE"
+runCFL=0.5
+timeIntegration_sw2d = "SSP33"
+#timeIntegration_sw2d = "FE"
 
 multilevelNonlinearSolver  = Newton
 if (LUMPED_MASS_MATRIX==1):
@@ -43,7 +43,7 @@ nnx0=6
 nnz=1
 
 nnx = (nnx0-1)*(2**refinement)+1
-nny = nnx
+nny = (nnx-1)/2+1
 #nny = 2
 
 he = L[0]/float(nnx-1)

@@ -8,8 +8,8 @@ import math
 
 nd=2
 
-T=100.0#2*math.pi/omega
-nDTout=1000
+T=10.0#2*math.pi/omega
+nDTout=100
 
 L=(75.0,30.0)
 g = 9.81
