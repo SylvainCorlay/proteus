@@ -295,7 +295,6 @@ class Coefficients(proteus.TransportCoefficients.TC_base):
                  modelIndex=0, 
                  cE=1.0,
                  LUMPED_MASS_MATRIX=1, 
-                 USE_EV_BASED_ON_GALERKIN=0,
                  mannings=0.):
         self.bathymetry = bathymetry 
         self.useRBLES=useRBLES
@@ -306,7 +305,6 @@ class Coefficients(proteus.TransportCoefficients.TC_base):
         self.nd=nd
         self.cE=cE
         self.LUMPED_MASS_MATRIX=LUMPED_MASS_MATRIX
-        self.USE_EV_BASED_ON_GALERKIN=USE_EV_BASED_ON_GALERKIN
         self.mannings=mannings
         self.modelIndex=modelIndex
         mass={}
@@ -631,8 +629,6 @@ class LevelModel(proteus.Transport.OneLevelTransport):
 
         #Vector for mass matrix
         self.check_positivity_water_height=True
-        self.recompute_lumped_mass_matrix=1
-        self.lumped_mass_matrix = numpy.zeros(self.u[0].dof.shape,'d') #NOTE: important to init with zeros
         #mesh
         self.h_dof_sge = self.u[0].dof.copy()
         self.hu_dof_sge = self.u[1].dof.copy()
@@ -1044,7 +1040,7 @@ class LevelModel(proteus.Transport.OneLevelTransport):
             self.hReg = np.zeros((self.nFreeDOF_global[0],),'d')
             for i in range(self.nFreeDOF_global[0]):
                 self.ML[i] = self.MC_a[rowptr_cMatrix[i]:rowptr_cMatrix[i+1]].sum()
-                self.hReg[i] = 1*self.ML[i]/diamD2*self.u[0].dof.max()                
+                self.hReg[i] = 1*self.ML[i]/diamD2*self.u[0].dof.max()
             np.testing.assert_almost_equal(self.ML.sum(), self.mesh.volume, err_msg="Trace of lumped mass matrix should be the domain volume",verbose=True)
 
             for d in range(self.nSpace_global): #spatial dimensions
@@ -1275,12 +1271,11 @@ class LevelModel(proteus.Transport.OneLevelTransport):
             numNonZeroEntries,
             rowptr_cMatrix,
             colind_cMatrix, 
-            self.lumped_mass_matrix, 
+            self.ML, 
             self.edge_based_cfl, 
             self.timeIntegration.runCFL,
             self.hReg.min(), #hEps. This is used to compute the cell based cfl
             self.hReg,
-            self.recompute_lumped_mass_matrix, 
             self.q[('u',0)], 
             self.q[('u',1)], 
             self.q[('u',2)],
@@ -1294,11 +1289,9 @@ class LevelModel(proteus.Transport.OneLevelTransport):
             self.muH_minus_muL,
             self.coefficients.cE, 
             self.coefficients.LUMPED_MASS_MATRIX, 
-            self.coefficients.USE_EV_BASED_ON_GALERKIN,
             self.timeIntegration.dt, 
             self.coefficients.mannings,
             self.quantDOFs, 
-            self.ML, 
             self.secondCallCalculateResidual)
 
 	if self.forceStrongConditions:#
