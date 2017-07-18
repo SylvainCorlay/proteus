@@ -70,13 +70,18 @@ def L2errorSFEMvsAF2(analyticalFunction,quadraturePointArray,abs_det_J,
 
 def L1errorSFEMvsAF2(analyticalFunction,quadraturePointArray,abs_det_J,
                      quadratureWeightArray,functionValueArray,T=None):
+    normalization=0.0 #MQL: quick hack to compute relative errors
     error=0.0
     range_nQuadraturePoints_element = range(quadraturePointArray.shape[1])
     for eN in range(quadraturePointArray.shape[0]):
         for k in range_nQuadraturePoints_element:
             AF = analyticalFunction.uOfXT(quadraturePointArray[eN,k],T)
             error += abs(functionValueArray[eN,k] - AF)*quadratureWeightArray[k]*abs_det_J[eN,k]
-    return globalSum(error)
+            normalization += abs(AF)*quadratureWeightArray[k]*abs_det_J[eN,k]
+    if (globalSum(normalization) != 0):
+        return globalSum(error)/globalSum(normalization)
+    else:
+        return globalSum(error)
 
 def L2errorVFEMvsAF2(analyticalFunction,quadraturePointArray,abs_det_J,
                      quadratureWeightArray,functionValueArray,T=None):
