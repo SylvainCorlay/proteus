@@ -13,7 +13,7 @@
 //5. Try other choices of variables h,hu,hv, Bova-Carey symmetrization?
 
 #define POWER_SMOOTHNESS_INDICATOR 2
-#define LINEAR_FRICTION 1
+#define LINEAR_FRICTION 0
 
 // FOR CELL BASED ENTROPY VISCOSITY 
 #define ENTROPY(g,h,hu,hv,z,one_over_hReg) 0.5*(g*h*h+hu*hu*one_over_hReg+hv*hv*one_over_hReg + 2.*g*h*z)
@@ -3249,11 +3249,15 @@ namespace proteus
 	  //////////////////////////////////
 	  // COMPUTE SMOOTHNESS INDICATOR //
 	  //////////////////////////////////
-	  if (fabs(alpha_numerator) <= hReg[i] ) //constante state
-	    alphai = 0.;
-	  else 
-	    alphai = fabs(alpha_numerator)/(alpha_denominator+1E-15);
-
+	  if (hi <= hReg[i])
+	    alphai = 1.;
+	  else
+	    {
+	      if (fabs(alpha_numerator) <= hReg[i] ) //constante state
+		alphai = 0.;
+	      else 
+		alphai = fabs(alpha_numerator)/(alpha_denominator+1E-15);
+	    }
 	  double one_over_entNormFactori = 2./(etaMax[i]-etaMin[i]+1E-15);
 	  quantDOFs[i] = global_entropy_residual[i]*one_over_entNormFactori;
 	  //quantDOFs[i] = global_entropy_residual[i];
